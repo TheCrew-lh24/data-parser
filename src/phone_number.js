@@ -21,8 +21,9 @@ const result = papa.default.parse(csvContent, { header: true });
 result.meta.fields.push("phone_indicator")
 result.meta.fields.push("parsed_titles")
 result.meta.fields.push("clean_name")
-const results = []
-const rows = {}
+result.meta.fields.push("abbreviated_name")
+// const results = []
+// const rows = {}
 for (const row of result.data) {
     // ---- START NAME ---
     let name = row.parsed_name
@@ -44,6 +45,9 @@ for (const row of result.data) {
         }
         row.parsed_titles = titles.sort().join()
         
+        // replace that fucking thing that i hate
+        name = name.trim().replace(/\.([^ ])/g, ". $1")
+
         const name_words = name.trim().split(/ +/g)
         for (let i = 0; i < name_words.length;) {
             const word = name_words[i]
@@ -64,6 +68,19 @@ for (const row of result.data) {
 
         name = name_words.join(" ")
         row.clean_name = name
+
+        // create abbreviated_name
+        let abbreviated_name = ""
+        {
+            // could potentially use name_words but i'm recreating it
+            // to avoid more bugs if I change name_words
+            const words = name.split(" ")
+            abbreviated_name = [
+                words[0][0] + ".",
+                ...words.slice(1)
+            ].filter(f => !!f).join(" ")
+        }
+        row.abbreviated_name = abbreviated_name
     }
     // ---- END NAME ---
 
@@ -77,15 +94,15 @@ for (const row of result.data) {
         phone = phone.replace(/^([^+])/, "+$1")
         phone = phone.replace(/^\+0+/, "+")
         
-        results.push(phone)
+        // results.push(phone)
     
-        rows[phone] ??= []
-        rows[phone].push([
-            row.parsed_name,
-            row.parsed_address_street_name,
-            row.parsed_address_city,
-            row.parsed_address_country
-        ])
+        // rows[phone] ??= []
+        // rows[phone].push([
+        //     row.parsed_name,
+        //     row.parsed_address_street_name,
+        //     row.parsed_address_city,
+        //     row.parsed_address_country
+        // ])
     
         row.party_phone = phone
         let phone_indicator
@@ -109,14 +126,14 @@ writeFileSync("unparse.csv", papa.default.unparse(result))
 
 
 
-const frequency = {}
-for(const result of results) {
-    frequency[result] ??= 0
-    frequency[result]++
-}
+// const frequency = {}
+// for(const result of results) {
+//     frequency[result] ??= 0
+//     frequency[result]++
+// }
 
-const frequencies = Object.entries(frequency)
-    .sort(([phone1, qty1], [phone2, qty2]) => qty1 - qty2)
-for(const [phone, qty] of frequencies) {
-    // console.log(qty, phone, rows[phone])
-}
+// const frequencies = Object.entries(frequency)
+//     .sort(([phone1, qty1], [phone2, qty2]) => qty1 - qty2)
+// for(const [phone, qty] of frequencies) {
+//     // console.log(qty, phone, rows[phone])
+// }
