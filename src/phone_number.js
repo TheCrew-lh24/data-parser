@@ -48,10 +48,12 @@ for (const row of result.data) {
         for (let i = 0; i < name_words.length;) {
             const word = name_words[i]
 
-            if(name_words.indexOf(word) !== i) {
+            if(name_words.indexOf(word) == i - 1) {
+                // console.log(`Removing duplicate word`, [word], "from", [name])
                 name_words.splice(i, 1)
                 continue
             }
+            // some entries end with iii
             if (/^i+$/.test(word)) {
                 name_words.splice(i, 1)
                 continue
@@ -116,5 +118,5 @@ for(const result of results) {
 const frequencies = Object.entries(frequency)
     .sort(([phone1, qty1], [phone2, qty2]) => qty1 - qty2)
 for(const [phone, qty] of frequencies) {
-    console.log(qty, phone, rows[phone])
+    // console.log(qty, phone, rows[phone])
 }
