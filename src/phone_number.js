@@ -95,7 +95,11 @@ for (const row of result.data) {
         phone = phone.replace(/[^\d+]/g, ""); // remove all non digits and plus to clean up (this does not seem to induce false positives after comparing removing different stuff or not)
         phone = phone.replace(/(\d|\+)\+/g, "$1"); // remove non-leading plus
         phone = phone.replace(/^\+?0+/, "+"); // replace leading zeros with a plus (e.g 0039 or +0039 becomes +39)
-        phone = phone.replace(/^([^+])/, "+$1"); // add plus if it doesn't exist
+
+        // Add a plus sign at the beginning if it's missing
+        if (phone[0] !== "+") {
+            phone = "+" + phone;
+        }
         // results.push(phone)
 
         // rows[phone] ??= []
