@@ -43,7 +43,25 @@ for (const row of result.data) {
             }
         }
         row.parsed_titles = titles.sort().join()
-        row.clean_name = name.replace(/ {2,}/g, " ").trim()
+        
+        const name_words = name.trim().split(/ +/g)
+        for (let i = 0; i < name_words.length;) {
+            const word = name_words[i]
+
+            if(name_words.indexOf(word) !== i) {
+                name_words.splice(i, 1)
+                continue
+            }
+            if (/^i+$/.test(word)) {
+                name_words.splice(i, 1)
+                continue
+            }
+
+            i++
+        }
+
+        name = name_words.join(" ")
+        row.clean_name = name
     }
     // ---- END NAME ---
 
